@@ -19,10 +19,10 @@ pierde el 20 %; quien no aparezca aquí no cuenta como parte del grupo.
 
 | Nombre completo | Código | Correo institucional |
 |---|---|---|
-| | | |
-| | | |
-| | | |
-| | | |
+|Santiago Serrano Morales |2477006 |serrano.santiago@correounivalle.edu.co |
+|Nicolás Cardona García |2477349 |nicolas.cardona.garcia@correounivalle.edu.co |
+|Laura Sofía Echeverry González |2477067 |echeverry.laura@correounivalle.edu.co |
+|Samuel Esteban Peña Jaramillo |2477399 |samuel.pena@correounivalle.edu.co |
 
 ## Entregas
 
