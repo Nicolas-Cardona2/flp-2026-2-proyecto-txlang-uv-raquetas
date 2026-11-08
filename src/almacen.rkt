@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Laura
+;Autores: Laura Sofía Echeverry González 2477067, Santiago Serrano Morales 2477006
 
 (require "valores.rkt")
 

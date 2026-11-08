@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Nombre1 Codigo1, Nombre2 Codigo2, ...
+;Autores: Santiago Serrano Morales 2477006
 
 #|
   Interpretador de TxLang-UV.
@@ -16,6 +16,20 @@
   que usan pruebas-txlang.rkt y ejemplos-anexo.rkt. Todo lo demás lo pone el
   grupo, siguiendo la gramática y la semántica del enunciado.
 |#
+
+(require "src/sintaxis.rkt"
+         "src/unparse.rkt"
+         "src/ambiente.rkt"
+         "src/almacen.rkt"
+         "src/valores.rkt"
+         "src/interprete.rkt")
+
+(provide (all-from-out "src/sintaxis.rkt")
+         (all-from-out "src/unparse.rkt")
+         (all-from-out "src/ambiente.rkt")
+         (all-from-out "src/almacen.rkt")
+         (all-from-out "src/valores.rkt")
+         (all-from-out "src/interprete.rkt"))
 
 ;;; ==========================================================
 ;;; 1. Especificación léxica
