@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Samuel Peña Jaramillo 2477399, Nombre2 Codigo2, ...
+;Autores: Samuel Peña Jaramillo 2477399
 
 #|
   Batería de pruebas del interpretador de TxLang-UV.
