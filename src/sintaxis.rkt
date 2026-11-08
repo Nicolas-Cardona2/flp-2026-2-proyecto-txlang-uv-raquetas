@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Nicolas 2477349
+;Autores: Nicolas Cardona 2477349
 
 #|
   Sintaxis de TxLang-UV especificación lexica, gramatica, arbol de sintaxis
