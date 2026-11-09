@@ -1,5 +1,5 @@
 #lang eopl
-;Autores: Nombre1 Codigo1, Nombre2 Codigo2, ...
+;Autores: Nicolas Cardona 2477349, Laura Sofía Echeverry González 2477067, Santiago Serrano Morales 2477006, Samuel Peña Jaramillo 2477399
 
 #|
   Los diez ejemplos del anexo del enunciado, copiados literalmente del
@@ -51,6 +51,22 @@
             (begin (set! fallidas (+ fallidas 1))
                    (eopl:printf "  FALLA se esperaba un rechazo y llego ~s~%" obtenido)))))))
 
+;; Primera entrega el ejemplo solo debe parsear y pasar la ida y vuelta de unparse, los argumentos que sobran son para la entrega 2
+(define ejemplo-parsea
+  (lambda (etiqueta texto . resto)
+    (let ((obtenido
+           (with-handlers ((exn:fail? (lambda (e) (string-append "ERROR: " (exn-message e)))))
+             (let* ((una (unparse (scan&parse texto)))
+                    (otra (unparse (scan&parse una))))
+               (if (string=? una otra) "parsea" "ERROR: unparse no es estable")))))
+      (begin
+        (eopl:printf "~%--- ~a ---~%" etiqueta)
+        (if (string=? obtenido "parsea")
+            (begin (set! pasadas (+ pasadas 1))
+                   (eopl:printf "  ok    parsea y unparse es estable (se ejecuta en la entrega 2)~%"))
+            (begin (set! fallidas (+ fallidas 1))
+                   (eopl:printf "  FALLA ~a~%" obtenido)))))))
+
 (ejemplo "Ejemplo 1: una celda y dos escrituras"
   "let c = ref(0) in
   begin
@@ -61,7 +77,7 @@
 end"
   "2")
 
-(ejemplo "Ejemplo 2: una transferencia que se confirma"
+(ejemplo-parsea "Ejemplo 2: una transferencia que se confirma"
   "let origen = ref(500), destino = ref(120) in
   begin
     atomic
@@ -77,7 +93,7 @@ end"
 end"
   "300")
 
-(ejemplo "Ejemplo 3: una transferencia que se revierte"
+(ejemplo-parsea "Ejemplo 3: una transferencia que se revierte"
   "let saldo = ref(100) in
   begin
     atomic
@@ -95,7 +111,7 @@ end"
 end"
   "100")
 
-(ejemplo "Ejemplo 4: transacciones anidadas"
+(ejemplo-parsea "Ejemplo 4: transacciones anidadas"
   "let a = ref(1), b = ref(1) in
   begin
     atomic
@@ -118,7 +134,7 @@ end"
 end"
   "unit")
 
-(ejemplo "Ejemplo 5: un registro con un campo mutable"
+(ejemplo-parsea "Ejemplo 5: un registro con un campo mutable"
   "record Cuenta { titular: string, saldo: ref(int) }
 
 let c = new Cuenta { titular = \"Ana Maria\", saldo = ref(300) } in
@@ -153,7 +169,7 @@ in begin
 end"
   "40")
 
-(ejemplo "Ejemplo 8: lo que la reversión no alcanza"
+(ejemplo-parsea "Ejemplo 8: lo que la reversión no alcanza"
   "let x = ref(0) in
   begin
     atomic
@@ -170,12 +186,12 @@ end"
 end"
   "unit")
 
-(ejemplo-rechazado "Ejemplo 9: un programa que el chequeador rechaza"
+(ejemplo-parsea "Ejemplo 9: un programa que el chequeador rechaza"
   "let bandera = ref(true) in
   set bandera := 1
 end")
 
-(ejemplo "Ejemplo 10: un despacho que se deshace a medias"
+(ejemplo-parsea "Ejemplo 10: un despacho que se deshace a medias"
   "record Item { nombre: string, cantidad: ref(int) }
 
 let item = new Item { nombre = \"cable\", cantidad = ref(7) },
