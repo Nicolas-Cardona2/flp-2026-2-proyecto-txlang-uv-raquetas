@@ -2,13 +2,12 @@
 ;Autores: Samuel Peña Jaramillo 2477399
 
 #|
-  Batería de pruebas del interpretador de TxLang-UV.
+  Bateria de pruebas del interpretador de TxLang-UV: primera entrega.
 
   Cada prueba compara el texto que devuelve `correr` con el que se espera, o
-  comprueba que un programa se rechace. La primera entrega deja aquí al
-  menos 15 programas que cubran todo su alcance; la segunda, al menos 20 que
-  cubran el proyecto completo y al menos 5 programas mal tipados con el
-  error que el chequeador reporta en cada uno.
+  comprueba que un programa se rechace. Cubre el scanner, la gramatica,
+  unparse (ida y vuelta) y el nucleo de value-of: literales, let, ref/deref/set,
+  begin, if/elif/else, while, primitivas, procedimientos, clausuras y letrec.
 
   Se ejecuta con:  racket pruebas-txlang.rkt
 |#
@@ -43,7 +42,7 @@
   (lambda (etiqueta texto esperado)
     (verificar etiqueta (intentar texto) esperado)))
 
-;; El chequeador asigna al programa el tipo esperado.
+;; el chequeador asigna al programa el tipo esperado
 (define prueba-tipo
   (lambda (etiqueta texto esperado)
     (verificar etiqueta
@@ -51,7 +50,7 @@
                  (tipo-del-programa texto))
                esperado)))
 
-;; El programa se rechaza, por el chequeador o por el intérprete.
+;; dl programa se rechaza, por el chequeador o por el interprete
 (define prueba-rechazo
   (lambda (etiqueta texto)
     (let ((r (intentar texto)))
@@ -61,93 +60,90 @@
           (begin (set! fallidas (+ fallidas 1))
                  (eopl:printf "  FALLA ~a: se esperaba un rechazo y llegó ~s~%" etiqueta r))))))
 
-;; unparse del árbol de un texto vuelve a parsear al mismo árbol.
+;; unparse del arbol de un texto vuelve a parsear al mismo arbol
 (define ida-y-vuelta
   (lambda (etiqueta texto)
     (let ((una (unparse (scan&parse texto))))
       (verificar etiqueta (unparse (scan&parse una)) una))))
 
-;;; ==========================================================
-;;; Primera entrega: léxico, gramática, unparse y núcleo
-;;; ==========================================================
-
+;;; lexico, gramatica, unparse y nucleo
 (eopl:printf "~%== Primera entrega ==~%")
 
 (prueba "literal entero" "42" "42")
 (ida-y-vuelta "unparse de un literal" "42")
 
-;; Pruebas de ejecucion del nucleo (value-of)
+;; pruebas de ejecucion del nucleo (value-of)
 
-;; 1. literales basicos (flotante, cadena, caracter, booleanos y unit)
+;; 1 literales basicos (flotante, cadena, caracter, booleanos y unit)
 (prueba "literales flotante y neg" "-3.14" "-3.14")
 (prueba "literal cadena" "\"hola mundo\"" "hola mundo")
 (prueba "literal caracter y bool" "if true then 'a' else 'b' end" "a")
 (prueba "literal unit" "unit" "unit")
 
-;; 2. ligaduras locales let (verificando que no se vean entre si)
+;; 2 ligaduras locales let (verificando que no se vean entre si)
 (prueba "let multiple y alcance"
         "let x = 10, y = 20 in let x = +(x, 5), y = x in +(x, y) end end"
         "25")
 
-;; 3. referencias (ref, deref, set) y begin
+;; 3 referencias (ref, deref, set) y begin
 (prueba "celda mutable y begin"
         "let c = ref(0) in begin set c := +(deref(c), 1); set c := +(deref(c), 1); deref(c) end end"
         "2")
 
-;; 4. if con multiples ramas elif y else
+;; 4 if con multiples ramas elif y else
 (prueba "condicional if-elif-else"
         "let n = 0 in if >(n, 0) then \"positivo\" elif <(n, 0) then \"negativo\" else \"cero\" end end"
         "cero")
 
-;; 5. verificacion de error cuando la condicion del if no es booleana
+;; 5 verificacion de error cuando la condicion del if no es booleana
 (prueba-rechazo "if con prueba no booleana"
                 "if 1 then 2 else 3 end")
 
-;; 6. ciclo while con mutacion en el almacen
+;; 6 ciclo while con mutacion en el almacen
 (prueba "ciclo while acumulador"
         "let i = ref(5), acc = ref(0) in begin while >(deref(i), 0) do begin set acc := +(deref(acc), deref(i)); set i := -(deref(i), 1) end end; deref(acc) end end"
         "15")
 
-;; 7. primitivas aritmeticas
+;; 7 primitivas aritmeticas
 (prueba "primitivas aritmeticas"
         "+(*(3, 4), -(/(20, 3), %(10, 3)))"
         "17")
 
-;; 8. verificacion de error en division por cero
+;; 8 verificacion de error en division por cero
 (prueba-rechazo "error division por cero"
                 "/(10, 0)")
 
-;; 9. primitivas relacionales y logicas (>, <, >=, <=, ==, !=, and, or, not)
+;; 9 primitivas relacionales y logicas (>, <, >=, <=, ==, !=, and, or, not)
 (prueba "primitivas relacionales y booleanas"
         "and(and(>=(5, 5), <=(3, 4)), or(==(1, 2), and(!=(1, 2), not(false))))"
         "true")
 
-;; 10.primtivas de cadenas, conversion y print (concat, length, to-string, to-number)
+;; 10 primtivas de cadenas, conversion y print (concat, length, to-string, to-number)
 (prueba "primitivas de cadenas y conversion"
         "let s = concat(\"Edad: \", to-string(+(to-number(\"20\"), 5))) in length(s) end"
         "8")
 
-;; 11. procedimientos (proc), aplicacion (apply) y clausuras con alcance lexico
+;; 11 procedimientos (proc), aplicacion (apply) y clausuras con alcance lexico
 (prueba "clausura y alcance lexico"
         "let factor = 10 in let escalar = proc (v: int) *(v, factor) end in let factor = 1000 in apply escalar (5) end end end"
         "50")
 
-;; 12. paso de referencias como argumentos a procedimientos
+;; 12 paso de referencias como argumentos a procedimientos
 (prueba "paso de referencia a proc"
         "let celda = ref(10), duplicar = proc (r: ref(int)) set r := *(deref(r), 2) end in begin apply duplicar (celda); apply duplicar (celda); deref(celda) end end"
         "40")
 
-;; 13. recursion simple con letrec (factorial)
+;; 13 recursion simple con letrec (factorial)
 (prueba "letrec factorial"
         "letrec int fact (n: int) = if ==(n, 0) then 1 else *(n, apply fact (-(n, 1))) end in apply fact (5) end"
         "120")
 
-;; 14. recursion mutua con letrec (par e impar)
+;; 14 recursion mutua con letrec (par e impar)
 (prueba "letrec recursion mutua"
         "letrec bool par (n: int) = if ==(n, 0) then true else apply impar (-(n, 1)) end bool impar (n: int) = if ==(n, 0) then false else apply par (-(n, 1)) end in apply par (6) end"
         "true")
 
-;; 15. comentarios de linea y de bloque ignorados por el scanner
+;; 15 comentarios de linea y de bloque ignorados por el scanner
 (prueba "comentarios linea y bloque"
         "#| comentario de bloque |# let x = 10 // comentario de linea\n in +(x, 5) end"
         "15")
@@ -170,22 +166,7 @@
 (ida-y-vuelta "unparse 14: acceso a campo field" "record Par { a: int, b: int } let p = new Par { a = 1, b = 2 } in field(p, a) end")
 (ida-y-vuelta "unparse 15: programa completo combinado" "record Item { cant: ref(int) } let it = new Item { cant = ref(5) } in atomic set field(it, cant) := 0 onfail (e) -1 end end")
 
-;;; ==========================================================
-;;; Segunda entrega: transacciones, registros y tipos
-;;; ==========================================================
-
-(eopl:printf "~%== Segunda entrega ==~%")
-
-;; Agregue aquí las pruebas de la segunda entrega: bloques atomic que
-;; confirman y que revierten, anidamiento, registros, y al menos cinco
-;; programas mal tipados con prueba-rechazo o prueba-tipo. Por ejemplo:
-;;
-;; (prueba-tipo "tipo de un proc" "proc (x: int) x end" "(int -> int)")
-;; (prueba-rechazo "suma de int y bool" "+(1, true)")
-
-;;; ==========================================================
 ;;; Resumen
-;;; ==========================================================
 
 (eopl:printf "~%==========================================~%")
 (eopl:printf "  pasadas ~s, fallidas ~s~%" pasadas fallidas)

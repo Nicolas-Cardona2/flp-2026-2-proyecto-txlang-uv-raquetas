@@ -1,20 +1,9 @@
 #lang eopl
-;Autores: Santiago Serrano Morales 2477006
+;Autores: Nicolas Cardona 2477349, Laura Sofía Echeverry González 2477067, Santiago Serrano Morales 2477006, Samuel Peña Jaramillo 2477399
 
 #|
-  Interpretador de TxLang-UV.
-  Proyecto final del curso Fundamentos de Interpretación y Compilación de
-  Lenguajes de Programación, Universidad del Valle.
-
-  El archivo va en nueve secciones, en el orden en que se construye un
-  interpretador. La primera entrega llena las secciones 1 a 6 y la 8; la
-  segunda agrega al almacén el registro que permite revertir, los registros
-  del lenguaje y el chequeador de tipos de la sección 7.
-
-  Lo que hay ahora es el andamiaje mínimo para que las baterías corran: una
-  gramática con un solo literal, un value-of de una cláusula y la interfaz
-  que usan pruebas-txlang.rkt y ejemplos-anexo.rkt. Todo lo demás lo pone el
-  grupo, siguiendo la gramática y la semántica del enunciado.
+  Fachada del interpretador de TxLang-UV: reune los modulos de src/
+  y los vuelve a exportar.
 |#
 
 (require "src/sintaxis.rkt"
@@ -22,16 +11,20 @@
          "src/ambiente.rkt"
          "src/almacen.rkt"
          "src/valores.rkt"
-         "src/interprete.rkt")
+         "src/tipos.rkt"
+         "src/interprete.rkt"
+         "src/interfaz.rkt")
 
 (provide (all-from-out "src/sintaxis.rkt")
          (all-from-out "src/unparse.rkt")
          (all-from-out "src/ambiente.rkt")
          (all-from-out "src/almacen.rkt")
          (all-from-out "src/valores.rkt")
-         (all-from-out "src/interprete.rkt"))
+         (all-from-out "src/tipos.rkt")
+         (all-from-out "src/interprete.rkt")
+         (all-from-out "src/interfaz.rkt"))
 
-;;; ==========================================================
+#|;;; ==========================================================
 ;;; 1. Especificación léxica
 ;;; ==========================================================
 ;; Los dos tipos de comentario, los literales de cada clase y los
@@ -139,4 +132,4 @@
 (define correr
   (lambda (texto) (valor->texto (interpretar texto))))
 
-(provide (all-defined-out))
+(provide (all-defined-out))|#
